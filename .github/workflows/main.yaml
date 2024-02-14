@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: ${{ github.head_ref }}
 
       - name: Merge base branch
         if: github.event_name == 'pull_request_target'
@@ -57,10 +57,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
-
-      - name: debug github context
-        run: echo "${{ toJson(github) }}"
+          ref: ${{ github.head_ref }}
 
       - name: Merge base branch
         if: github.event_name == 'pull_request_target'
@@ -99,6 +96,8 @@ jobs:
             }
 
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Merge base branch
         if: github.event_name == 'pull_request_target'
