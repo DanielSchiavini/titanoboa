@@ -83,6 +83,7 @@
 
     /** Call the backend when the given function is called, handling errors */
     const handleCallback = func => async (token, ...args) => {
+        const start = Date.now();
         if (!colab) {
             // Check if the cell was already executed. In Colab, eval_js() doesn't replay.
             const response = await fetch(`../titanoboa_jupyterlab/callback/${token}`);
@@ -91,7 +92,8 @@
         }
 
         const body = stringify(await parsePromise(func(...args)));
-        // console.log(`Boa: ${func.name}(${args.map(a => JSON.stringify(a)).join(',')}) = ${body};`);
+        const duration = Date.now() - start;
+        console.log(`Boa (${duration}ms): ${func.name}(${args.map(a => JSON.stringify(a)).join(',')}) = ${body};`);
         if (colab) {
             return body;
         }
