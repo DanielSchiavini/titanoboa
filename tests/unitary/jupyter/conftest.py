@@ -26,31 +26,6 @@ def replace_modules():
 
 
 @pytest.fixture()
-def tornado_mock(replace_modules):
-    replace_modules({"tornado.web": MagicMock(authenticated=lambda x: x)})
-
-
-@pytest.fixture()
-def jupyter_module_mock(replace_modules, tornado_mock):
-    jupyter_mock = MagicMock()
-    utils = jupyter_mock.utils
-    serverapp = jupyter_mock.serverapp
-    base_handlers = jupyter_mock.base.handlers
-
-    utils.url_path_join = lambda *args: "/".join(args)
-    base_handlers.APIHandler = object
-
-    replace_modules(
-        {
-            "jupyter_server.base.handlers": base_handlers,
-            "jupyter_server.serverapp": serverapp,
-            "jupyter_server.utils": utils,
-        }
-    )
-    return jupyter_mock
-
-
-@pytest.fixture()
 def nest_asyncio_mock(replace_modules):
     mock = MagicMock()
     mock.authenticated = lambda x: x
