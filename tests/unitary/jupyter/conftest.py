@@ -1,5 +1,6 @@
 import sys
 from multiprocessing.shared_memory import SharedMemory
+from os import urandom
 from unittest.mock import MagicMock
 
 import pytest
@@ -65,8 +66,10 @@ def shared_memory_length(nest_asyncio_mock):
 
 
 @pytest.fixture()
-def token(browser):
-    return browser._generate_token()
+def token():
+    from boa.integrations.jupyter.constants import CALLBACK_TOKEN_BYTES, PLUGIN_NAME
+
+    return f"{PLUGIN_NAME}_{urandom(CALLBACK_TOKEN_BYTES).hex()}"
 
 
 @pytest.fixture()
