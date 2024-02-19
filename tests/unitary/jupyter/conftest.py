@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def replace_modules():
     mocked_modules = {}
 
@@ -13,6 +13,9 @@ def replace_modules():
 
     def replace(modules: dict):
         for module, mock in modules.items():
+            assert (
+                module not in sys.modules
+            ), f"The module {module} should not be installed."
             sys.modules[module] = mock
             mocked_modules[module] = mock
 
@@ -62,10 +65,8 @@ def shared_memory_length(nest_asyncio_mock):
 
 
 @pytest.fixture()
-def token(nest_asyncio_mock, jupyter_module_mock):
-    from boa.integrations.jupyter.browser import _generate_token
-
-    return _generate_token()
+def token(browser):
+    return browser._generate_token()
 
 
 @pytest.fixture()
