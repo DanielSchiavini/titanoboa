@@ -1,6 +1,5 @@
 import json
 import re
-import sys
 from asyncio import get_event_loop
 from multiprocessing.shared_memory import SharedMemory
 from unittest import mock
@@ -10,19 +9,6 @@ import pytest
 from eth_account import Account
 
 import boa
-
-
-@pytest.fixture()
-def ipython_mock(replace_modules):
-    display_mock = MagicMock()
-    display_module_mock = MagicMock(
-        Javascript=lambda data: MagicMock(data=data), display=display_mock
-    )
-    for m in list(sys.modules):
-        if m.startswith("IPython"):
-            del sys.modules[m]
-    replace_modules({"IPython.display": display_module_mock})
-    return display_mock
 
 
 @pytest.fixture()
