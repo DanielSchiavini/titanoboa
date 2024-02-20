@@ -4,7 +4,7 @@ in IPython/JupyterLab/Google Colab.
 """
 import json
 import logging
-from asyncio import get_running_loop, new_event_loop, set_event_loop, sleep
+from asyncio import get_event_loop, sleep
 from itertools import chain
 from multiprocessing.shared_memory import SharedMemory
 from os import urandom
@@ -115,11 +115,10 @@ class BrowserSigner:
         :param tx_data: The transaction data to sign.
         :return: The signed transaction data.
         """
-        return {
-            "hash": self._rpc.fetch(
-                "eth_sendTransaction", [tx_data], TRANSACTION_TIMEOUT_MESSAGE
-            )
-        }
+        hash = self._rpc.fetch(
+            "eth_sendTransaction", [tx_data], TRANSACTION_TIMEOUT_MESSAGE
+        )
+        return {"hash": hash}
 
     def sign_typed_data(
         self, domain: dict[str, Any], types: dict[str, list], value: dict[str, Any]
@@ -206,7 +205,7 @@ def _wait_buffer_set(buffer: memoryview, timeout_message: str) -> bytes:
     """
 
     async def _async_wait(deadline: float) -> bytes:
-        inner_loop = get_running_loop()
+        inner_loop = get_event_loop()
         while buffer.tobytes().startswith(NUL):
             if inner_loop.time() > deadline:
                 raise TimeoutError(timeout_message)
@@ -214,11 +213,7 @@ def _wait_buffer_set(buffer: memoryview, timeout_message: str) -> bytes:
 
         return buffer.tobytes().split(NUL)[0]
 
-    try:
-        loop = get_running_loop()
-    except RuntimeError:
-        loop = new_event_loop()
-        set_event_loop(loop)
+    loop = get_event_loop()
     future = _async_wait(deadline=loop.time() + CALLBACK_TOKEN_TIMEOUT.total_seconds())
     task = loop.create_task(future)
     loop.run_until_complete(task)

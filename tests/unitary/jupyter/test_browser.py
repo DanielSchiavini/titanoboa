@@ -67,9 +67,7 @@ def find_response(mock_calls, func_to_body_dict):
 def mock_callback(mocked_token, browser, display_mock):
     """Returns a function that allows mocking the result of the frontend callback."""
 
-    with mock.patch(
-        "boa.integrations.jupyter.browser.get_running_loop"
-    ) as mock_get_loop:
+    with mock.patch("boa.integrations.jupyter.browser.get_event_loop") as mock_get_loop:
         io_loop = mock_get_loop.return_value
         io_loop.time.return_value = 0
         func_to_body_dict = {}
@@ -92,7 +90,8 @@ def mock_callback(mocked_token, browser, display_mock):
                 memory = SharedMemory(name=mocked_token)
                 memory.buf[0 : len(body)] = body
                 task = MagicMock()
-                task.result.return_value = get_event_loop().run_until_complete(future)
+                loop = get_event_loop()
+                task.result.return_value = loop.run_until_complete(future)
                 return task
 
             io_loop.create_task = create_task
