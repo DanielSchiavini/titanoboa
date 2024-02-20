@@ -11,7 +11,7 @@ def server_app_mock():
 
 
 @pytest.fixture()
-def handlers():
+def handlers(nest_asyncio_mock):
     from boa.integrations.jupyter import handlers
 
     return handlers
@@ -27,7 +27,7 @@ def callback_handler(handlers):
     return handler
 
 
-def test_setup_handlers(handlers, server_app_mock):
+def test_setup_handlers(handlers, server_app_mock, nest_asyncio_mock):
     handlers.setup_handlers(server_app_mock)
     server_app_mock.web_app.add_handlers.assert_called_once()
     _, kwargs = server_app_mock.web_app.add_handlers.call_args
@@ -40,6 +40,7 @@ def test_setup_handlers(handlers, server_app_mock):
             )
         ],
     }
+    nest_asyncio_mock.apply.assert_not_called()
 
 
 def test_no_body(callback_handler, token):

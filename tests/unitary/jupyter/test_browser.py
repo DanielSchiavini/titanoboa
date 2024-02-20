@@ -110,7 +110,7 @@ def mock_fork(mock_callback):
 
 
 @pytest.fixture()
-def browser():
+def browser(nest_asyncio_mock, ipython_mock):
     # Import the browser module after the mocks have been set up
     from boa.integrations.jupyter import browser
 
@@ -135,8 +135,8 @@ def colab_eval_mock(browser):
         yield colab_eval_mock
 
 
-def test_nest_applied(browser):
-    browser.nest_asyncio.apply.assert_called()
+def test_nest_applied(nest_asyncio_mock, browser):
+    nest_asyncio_mock.apply.assert_called_once()
 
 
 def test_browser_sign_typed_data(browser, display_mock, mock_callback, env):

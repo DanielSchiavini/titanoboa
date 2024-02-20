@@ -1,11 +1,20 @@
 from multiprocessing.shared_memory import SharedMemory
 from os import urandom
+from unittest.mock import MagicMock
 
 import pytest
 
 
 @pytest.fixture()
-def shared_memory_length():
+def nest_asyncio_mock(replace_modules):
+    mock = MagicMock()
+    mock.authenticated = lambda x: x
+    replace_modules({"nest_asyncio": mock})
+    return mock
+
+
+@pytest.fixture()
+def shared_memory_length(nest_asyncio_mock):
     from boa.integrations.jupyter.constants import SHARED_MEMORY_LENGTH
 
     return SHARED_MEMORY_LENGTH
