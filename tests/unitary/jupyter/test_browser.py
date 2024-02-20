@@ -18,6 +18,8 @@ def ipython_mock(replace_modules):
     display_module_mock = MagicMock(
         Javascript=lambda data: MagicMock(data=data), display=display_mock
     )
+    # Delete all IPython modules, to avoid conflicts
+    # this is safe because replace_modules will recover all the modules after the test
     for m in list(sys.modules):
         if m.startswith("IPython"):
             del sys.modules[m]
