@@ -11,7 +11,7 @@ def server_app_mock():
 
 
 @pytest.fixture()
-def handlers(nest_asyncio_mock):
+def handlers(jupyter_module_mock, nest_asyncio_mock):
     from boa.integrations.jupyter import handlers
 
     return handlers
