@@ -4,7 +4,7 @@ in IPython/JupyterLab/Google Colab.
 """
 import json
 import logging
-from asyncio import get_running_loop, sleep
+from asyncio import get_running_loop, new_event_loop, set_event_loop, sleep
 from itertools import chain
 from multiprocessing.shared_memory import SharedMemory
 from os import urandom
@@ -214,7 +214,11 @@ def _wait_buffer_set(buffer: memoryview, timeout_message: str) -> bytes:
 
         return buffer.tobytes().split(NUL)[0]
 
-    loop = get_running_loop()
+    try:
+        loop = get_running_loop()
+    except RuntimeError:
+        loop = new_event_loop()
+        set_event_loop(loop)
     future = _async_wait(deadline=loop.time() + CALLBACK_TOKEN_TIMEOUT.total_seconds())
     task = loop.create_task(future)
     loop.run_until_complete(task)
