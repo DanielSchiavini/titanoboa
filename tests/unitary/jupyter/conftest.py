@@ -1,8 +1,28 @@
+import sys
 from multiprocessing.shared_memory import SharedMemory
 from os import urandom
 from unittest.mock import MagicMock
 
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def replace_modules():
+    mocked_modules = {}
+
+    anchor = sys.modules.copy()
+
+    def replace(modules: dict):
+        for module, mock in modules.items():
+            assert (
+                module not in sys.modules
+            ), f"The module {module} should not be installed."
+            sys.modules[module] = mock
+            mocked_modules[module] = mock
+
+    yield replace
+
+    sys.modules = anchor
 
 
 @pytest.fixture()
