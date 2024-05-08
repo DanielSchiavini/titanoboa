@@ -33,8 +33,8 @@ jobs:
         if: github.event_name == 'pull_request_target'
         with:
           fetch-depth: 0 # we need the history to be able to merge
-          repository: ${{ github.pull_request.base_repo }}
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          repository: ${{ github.pull_request.base.repo.full_name }}
+          ref: ${{ github.event.pull_request.base.ref }}
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v4
